@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Plus, Edit2, Trash2, Search, X, Upload, Eye, EyeOff, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
 const BACKEND = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';

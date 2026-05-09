@@ -4,7 +4,7 @@ import {
   ArrowLeft, Save, Upload, Plus, Trash2, X, Star,
   ChevronDown, ChevronRight, Check, Tag, Package, Loader2, AlertCircle,
 } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import { useCategories } from '../../hooks/useCategories';
 import { useBrands } from '../../hooks/useBrands';
 

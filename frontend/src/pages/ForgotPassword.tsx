@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, KeyRound, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, RotateCcw } from 'lucide-react';
-import api from '../lib/api';
+import api from '../config/Axios';
 
 type Step = 'email' | 'otp' | 'newPassword' | 'success';
 

@@ -103,3 +103,29 @@ exports.sendMessage = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const aiService = require('../services/aiService');
+
+/* ─── CHAT WITH AI ─── */
+exports.chatWithAI = async (req, res) => {
+  try {
+    const { message, history } = req.body;
+    
+    // Convert history format if needed (Groq expects {role, content})
+    const chatHistory = (history || []).map(h => ({
+      role: h.sender?.role === 'bot' ? 'assistant' : 'user',
+      content: h.content
+    }));
+
+    const response = await aiService.getAIConsultantResponse(message, chatHistory);
+    
+    res.json({
+      _id: Date.now().toString(),
+      sender: { role: 'bot', name: 'AI Consultant' },
+      content: response,
+      createdAt: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

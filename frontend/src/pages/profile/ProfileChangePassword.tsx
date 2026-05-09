@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Lock, Eye, EyeOff, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 
 const PasswordField = ({
   label, field, value, hint, show, setShow, setForm, form

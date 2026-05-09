@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search, X, Send, Bell, Smartphone, Mail, Loader2 } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import { toast } from 'react-toastify';
 import DeleteConfirmModal from './DeleteConfirmModal';
 

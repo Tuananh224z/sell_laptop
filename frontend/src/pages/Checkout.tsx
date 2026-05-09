@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, Truck, ShieldCheck, MapPin, AlertCircle, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import api from '../lib/api';
+import api from '../config/Axios';
 import { toast } from 'react-toastify';
 
 const BACKEND = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
@@ -16,7 +16,7 @@ const getImgUrl = (src: string) => {
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cart, loading: cartLoading, refreshCart } = useCart();
+  const { cart, loading: cartLoading, refetchCart } = useCart();
   const { items, subtotal } = cart;
 
   const [paymentMethod, setPaymentMethod] = useState('cod');
@@ -84,7 +84,7 @@ const Checkout = () => {
       });
       
       toast.success('Đặt hàng thành công!');
-      refreshCart(); // This will clear the cart in context
+      refetchCart(); // This will clear the cart in context
       navigate('/checkout/success', { state: { orderNumber: data.orderNumber } });
     } catch (err: any) {
       console.error('Order failed', err);

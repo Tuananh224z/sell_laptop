@@ -45,12 +45,6 @@ const userSchema = new mongoose.Schema(
     // Wishlist
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
 
-    // Membership
-    points:     { type: Number, default: 0 },
-    totalSpent: { type: Number, default: 0 },
-    tier:       { type: String, default: 'Thành viên' },
-    orderCount: { type: Number, default: 0 },
-    lastOrderDate: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

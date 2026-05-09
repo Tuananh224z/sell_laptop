@@ -4,7 +4,6 @@ const User = require('../models/User');
 const Product = require('../models/Product');
 const Brand = require('../models/Brand');
 const Category = require('../models/Category');
-const Tier = require('../models/Tier');
 const emailService = require('../services/email.service');
 
 /* ─── Helpers ─── */
@@ -45,9 +44,6 @@ const userPublic = (u) => ({
   avatar: u.avatar,
   wishlist: u.wishlist,
   createdAt: u.createdAt,
-  points: u.points,
-  totalSpent: u.totalSpent,
-  tier: u.tier,
 });
 
 /* ────────────────────────────────────────

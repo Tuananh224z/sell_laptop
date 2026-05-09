@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Plus, Edit2, Trash2, Search, X, Upload, Eye, EyeOff, Loader2, CheckCircle2, AlertCircle, Globe } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { invalidateBrandCache } from '../../hooks/useBrands';
 

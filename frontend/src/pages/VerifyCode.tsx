@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import api from '../lib/api';
+import api from '../config/Axios';
 
 const VerifyCode = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);

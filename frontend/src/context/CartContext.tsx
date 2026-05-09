@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import api from '../lib/api';
+import { cartService } from '../services/cartService';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
 
@@ -57,7 +57,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const refetchCart = useCallback(async () => {
     if (!user) { setCart(defaultCart); return; }
     try {
-      const { data } = await api.get('/cart');
+      const { data } = await cartService.getCart();
       setCart(data);
     } catch {
       setCart(defaultCart);
@@ -76,7 +76,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     setLoading(true);
     try {
-      const { data } = await api.post('/cart/add', { productId, variantId, quantity });
+      const { data } = await cartService.addToCart({ productId, variantId, quantity });
       setCart({ items: data.items, itemCount: data.itemCount, subtotal: data.subtotal });
       toast.success('Đã thêm vào giỏ hàng!');
     } catch (err: any) {
@@ -89,7 +89,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateItem = async (itemId: string, quantity: number) => {
     setLoading(true);
     try {
-      const { data } = await api.patch(`/cart/${itemId}`, { quantity });
+      const { data } = await cartService.updateQuantity(itemId, quantity);
       setCart({ items: data.items, itemCount: data.itemCount, subtotal: data.subtotal });
       if (quantity <= 0) {
         toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
@@ -104,7 +104,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const removeItem = async (itemId: string) => {
     setLoading(true);
     try {
-      const { data } = await api.delete(`/cart/${itemId}`);
+      const { data } = await cartService.removeFromCart(itemId);
       setCart({ items: data.items, itemCount: data.itemCount, subtotal: data.subtotal });
       toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
     } catch (err: any) {
@@ -117,7 +117,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const clearCart = async () => {
     setLoading(true);
     try {
-      await api.delete('/cart');
+      await cartService.clearCart();
       setCart(defaultCart);
     } catch (err: any) {
       toast.error('Lỗi xóa giỏ hàng!');

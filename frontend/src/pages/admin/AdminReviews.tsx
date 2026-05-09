@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, Check, Trash2, Search, MessageSquare, X, XCircle, Loader2 } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import { toast } from 'react-toastify';
 import DeleteConfirmModal from './DeleteConfirmModal';
 

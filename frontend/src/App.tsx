@@ -23,7 +23,6 @@ import ProfileOrders from './pages/profile/ProfileOrders';
 import ProfileFavorites from './pages/profile/ProfileFavorites';
 import ProfileAddresses from './pages/profile/ProfileAddresses';
 import ProfileChangePassword from './pages/profile/ProfileChangePassword';
-import ProfileLoyalty from './pages/profile/ProfileLoyalty';
 import ProfileSupport from './pages/profile/ProfileSupport';
 import ProfileNotifications from './pages/profile/ProfileNotifications';
 import ProductDetail from './pages/ProductDetail';
@@ -43,8 +42,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminChat from './pages/admin/AdminChat';
 import AdminProductEdit from './pages/admin/AdminProductEdit';
 import AdminPromotions from './pages/admin/AdminPromotions';
-import AdminMembership from './pages/admin/AdminMembership';
-import AdminPOS from './pages/admin/AdminPOS';
+import AdminInventory from './pages/admin/AdminInventory';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminSupport from './pages/admin/AdminSupport';
 import AdminSettings from './pages/admin/AdminSettings';
@@ -100,7 +98,6 @@ function App() {
               <Route path="favorites" element={<ProfileFavorites />} />
               <Route path="addresses" element={<ProfileAddresses />} />
               <Route path="change-password" element={<ProfileChangePassword />} />
-              <Route path="loyalty" element={<ProfileLoyalty />} />
               <Route path="notifications" element={<ProfileNotifications />} />
               <Route path="support" element={<ProfileSupport />} />
             </Route>
@@ -121,8 +118,7 @@ function App() {
             <Route path="users" element={<AdminUsers />} />
             <Route path="chat" element={<AdminChat />} />
             <Route path="promotions" element={<AdminPromotions />} />
-            <Route path="membership" element={<AdminMembership />} />
-            <Route path="pos" element={<AdminPOS />} />
+            <Route path="inventory" element={<AdminInventory />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="support" element={<AdminSupport />} />
             <Route path="settings" element={<AdminSettings />} />

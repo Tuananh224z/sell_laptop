@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../lib/api';
+import { categoryService } from '../services/categoryService';
 
 interface Category {
   _id: string;
@@ -34,7 +34,7 @@ export const useCategories = (showAll = false) => {
     if (showAll) {
       if (cacheAll) { setCategories(cacheAll); setLoading(false); return; }
       if (!promiseAll) {
-        promiseAll = api.get('/categories', { params: { all: true } }).then(r => {
+        promiseAll = categoryService.getAll({ all: true }).then(r => {
           cacheAll = r.data as Category[];
           return cacheAll;
         });
@@ -44,7 +44,7 @@ export const useCategories = (showAll = false) => {
     } else {
       if (cacheVisible) { setCategories(cacheVisible); setLoading(false); return; }
       if (!promiseVisible) {
-        promiseVisible = api.get('/categories').then(r => {
+        promiseVisible = categoryService.getAll().then(r => {
           cacheVisible = (r.data as Category[]).filter(c => c.isVisible);
           return cacheVisible;
         });

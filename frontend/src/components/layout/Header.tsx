@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useCategories } from '../../hooks/useCategories';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 
 const BACKEND = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
 const getAvatar = (url?: string) => url ? (url.startsWith('http') ? url : `${BACKEND}${url}`) : null;

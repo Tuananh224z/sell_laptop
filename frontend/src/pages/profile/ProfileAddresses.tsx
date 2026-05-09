@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Plus, Pencil, Trash2, X, CheckCircle2, AlertCircle, Star } from 'lucide-react';
 import { toast } from 'react-toastify';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 
 interface Address {
   _id: string;

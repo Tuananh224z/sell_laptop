@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, Clock, ChevronRight, Loader2, Info } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import { toast } from 'react-toastify';
 
 interface Notification {

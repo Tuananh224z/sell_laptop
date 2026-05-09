@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const Tier = require('../models/Tier');
 
 // GET /api/users — admin only
 exports.getUsers = async (req, res) => {

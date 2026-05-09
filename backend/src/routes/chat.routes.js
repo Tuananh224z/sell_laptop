@@ -7,6 +7,7 @@ router.use(verifyToken);
 // User/Common routes
 router.get('/my',        ctrl.getConversationUser);
 router.get('/:id',       ctrl.getConversationDetail);
+router.post('/ai',       ctrl.chatWithAI);
 router.post('/:id/send', ctrl.sendMessage);
 
 // Admin routes

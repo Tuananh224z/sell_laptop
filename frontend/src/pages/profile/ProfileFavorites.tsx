@@ -2,7 +2,7 @@ import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { useEffect, useState } from 'react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { toast } from 'react-toastify';
@@ -17,7 +17,7 @@ const getImgUrl = (src: string) => {
 
 const getEffectivePrice = (item: any) => {
   if (item.price > 0) return { price: item.price, comparePrice: item.comparePrice };
-  if (item.hasVariants && item.variants?.length > 0) {
+  if (item.hasVariants && (item.variants?.length ?? 0) > 0) {
     const v = item.variants[0];
     return { price: v.price || 0, comparePrice: v.comparePrice || 0 };
   }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowUp, Phone } from 'lucide-react';
 import ChatWidget from '../common/ChatWidget';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 
 const FloatingWidgets = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);

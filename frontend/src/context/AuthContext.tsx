@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import api from '../lib/api';
+import { authService } from '../services/authService';
 
 export interface User {
   id: string;
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const stored = localStorage.getItem('accessToken');
       if (!stored) { setLoading(false); return; }
       try {
-        const { data } = await api.get('/auth/me');
+        const { data } = await authService.getMe();
         setUser(data);
         setToken(stored);
       } catch {
@@ -61,21 +61,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { data } = await api.post('/auth/login', { email, password });
+    const { data } = await authService.login({ email, password });
     localStorage.setItem('accessToken', data.accessToken);
     setToken(data.accessToken);
     setUser(data.user);
   };
 
   const register = async (form: { name: string; email: string; phone?: string; password: string }) => {
-    const { data } = await api.post('/auth/register', form);
+    const { data } = await authService.register(form);
     localStorage.setItem('accessToken', data.accessToken);
     setToken(data.accessToken);
     setUser(data.user);
   };
 
   const logout = async () => {
-    try { await api.post('/auth/logout'); } catch { /* ignore */ }
+    try { await authService.logout(); } catch { /* ignore */ }
     localStorage.removeItem('accessToken');
     setToken(null);
     setUser(null);

@@ -2,9 +2,18 @@ const Review = require('../models/Review');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 
+const resolveProductId = async (idOrSlug) => {
+  if (require('mongoose').Types.ObjectId.isValid(idOrSlug)) return idOrSlug;
+  const p = await Product.findOne({ slug: idOrSlug });
+  return p ? p._id : null;
+};
+
 exports.createReview = async (req, res) => {
   try {
-    const { productId } = req.params;
+    const { productId: idOrSlug } = req.params;
+    const productId = await resolveProductId(idOrSlug);
+    if (!productId) return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+
     const { rating, comment } = req.body;
 
     const order = await Order.findOne({
@@ -41,7 +50,11 @@ exports.createReview = async (req, res) => {
 
 exports.getProductReviews = async (req, res) => {
   try {
-    const reviews = await Review.find({ product: req.params.productId, status: 'approved' })
+    const { productId: idOrSlug } = req.params;
+    const productId = await resolveProductId(idOrSlug);
+    if (!productId) return res.json([]); // No product, no reviews
+
+    const reviews = await Review.find({ product: productId, status: 'approved' })
       .populate('user', 'name avatar')
       .sort({ createdAt: -1 });
     res.json(reviews);
@@ -52,13 +65,17 @@ exports.getProductReviews = async (req, res) => {
 
 exports.checkCanReview = async (req, res) => {
   try {
+    const { productId: idOrSlug } = req.params;
+    const productId = await resolveProductId(idOrSlug);
+    if (!productId) return res.json({ canReview: false, reason: 'Sản phẩm không tồn tại' });
+
     const order = await Order.findOne({
       user: req.user.id,
-      'items.product': req.params.productId,
+      'items.product': productId,
       orderStatus: 'delivered'
     });
     
-    const existing = await Review.findOne({ product: req.params.productId, user: req.user.id });
+    const existing = await Review.findOne({ product: productId, user: req.user.id });
     
     res.json({ 
       canReview: !!order && !existing,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 
 const Footer = () => {
   const [settings, setSettings] = useState<any>(null);

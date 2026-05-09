@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../lib/api';
+import { brandService } from '../services/brandService';
 
 export interface Brand {
   _id: string;
@@ -27,9 +27,9 @@ export const useBrands = (showAll = false) => {
   useEffect(() => {
     if (!showAll && cache) { setBrands(cache); setLoading(false); return; }
     const p = showAll
-      ? api.get('/brands').then(r => r.data as Brand[])
+      ? brandService.getAll().then(r => r.data as Brand[])
       : (() => {
-          if (!promise) promise = api.get('/brands').then(r => { cache = (r.data as Brand[]).filter(b => b.isVisible); return cache; });
+          if (!promise) promise = brandService.getAll().then(r => { cache = (r.data as Brand[]).filter(b => b.isVisible); return cache; });
           return promise;
         })();
     p.then(data => { setBrands(data); setLoading(false); }).catch(() => setLoading(false));

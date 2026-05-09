@@ -1,5 +1,4 @@
 const Product = require('../models/Product');
-const Tier = require('../models/Tier');
 const path = require('path');
 const fs = require('fs');
 
@@ -16,7 +15,7 @@ const deleteFile = (filePath) => {
   if (fs.existsSync(abs)) fs.unlinkSync(abs);
 };
 
-const toPublic = (p, tierDiscount = 0) => {
+const toPublic = (p) => {
   const obj = p.toObject ? p.toObject({ virtuals: true }) : p;
 
   // Lấy giá mặc định
@@ -28,15 +27,10 @@ const toPublic = (p, tierDiscount = 0) => {
     baseComparePrice = def.comparePrice || 0;
   }
 
-  // Áp dụng chiết khấu hạng thành viên (nếu có)
-  const finalPrice = tierDiscount > 0 ? Math.round(basePrice * (1 - tierDiscount / 100)) : basePrice;
-
   return {
     ...obj,
-    price:        finalPrice,
-    originalPrice: basePrice, // Lưu lại giá gốc trước khi giảm hạng để UI hiển thị nếu cần
+    price:        basePrice,
     comparePrice: baseComparePrice,
-    tierDiscount: tierDiscount, // Trả về % giảm giá của hạng
     thumbnail: toUrl(obj.thumbnail),
     images: (obj.images || []).map(toUrl),
     videos: (obj.videos || []).map(toUrl),
@@ -44,8 +38,7 @@ const toPublic = (p, tierDiscount = 0) => {
       const vPrice = v.price || 0;
       return {
         ...v,
-        price: tierDiscount > 0 ? Math.round(vPrice * (1 - tierDiscount / 100)) : vPrice,
-        originalPrice: vPrice,
+        price: vPrice,
         images: (v.images || []).map(toUrl),
       };
     }),
@@ -116,15 +109,8 @@ exports.getAll = async (req, res) => {
       Product.countDocuments(filter),
     ]);
 
-    // Get tier discount if user logged in
-    let tierDiscount = 0;
-    if (req.user?.tier) {
-      const tierObj = await Tier.findOne({ name: req.user.tier });
-      if (tierObj) tierDiscount = tierObj.discount;
-    }
-
     res.json({
-      products: products.map(p => toPublic(p, tierDiscount)),
+      products: products.map(p => toPublic(p)),
       total,
       page: Number(page),
       pages: Math.ceil(total / Number(limit)),
@@ -143,13 +129,7 @@ exports.getOne = async (req, res) => {
       .populate('brand', '_id name slug logo');
     if (!p) return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
 
-    let tierDiscount = 0;
-    if (req.user?.tier) {
-      const tierObj = await Tier.findOne({ name: req.user.tier });
-      if (tierObj) tierDiscount = tierObj.discount;
-    }
-
-    res.json(toPublic(p, tierDiscount));
+    res.json(toPublic(p));
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
 

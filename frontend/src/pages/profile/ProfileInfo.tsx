@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Camera, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../lib/api';
+import api from '../../config/Axios';
 
 interface Address {
   _id: string;
