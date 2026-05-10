@@ -1,16 +1,14 @@
 const router = require('express').Router();
 const ctrl = require('../controllers/chat.controller');
-const { verifyToken, requireAdmin } = require('../middleware/auth');
-
-router.use(verifyToken);
+const { verifyToken, requireAdmin, optionalVerifyToken } = require('../middleware/auth');
 
 // User/Common routes
-router.get('/my',        ctrl.getConversationUser);
-router.get('/:id',       ctrl.getConversationDetail);
-router.post('/ai',       ctrl.chatWithAI);
-router.post('/:id/send', ctrl.sendMessage);
+router.get('/my',        verifyToken, ctrl.getConversationUser);
+router.get('/:id',       verifyToken, ctrl.getConversationDetail);
+router.post('/ai',       optionalVerifyToken, ctrl.chatWithAI);
+router.post('/:id/send', verifyToken, ctrl.sendMessage);
 
 // Admin routes
-router.get('/admin/all', requireAdmin, ctrl.getConversationsAdmin);
+router.get('/admin/all', verifyToken, requireAdmin, ctrl.getConversationsAdmin);
 
 module.exports = router;

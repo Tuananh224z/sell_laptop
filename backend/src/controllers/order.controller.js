@@ -100,10 +100,76 @@ exports.getMyOrders = async (req, res) => {
 };
 
 /* ─── GET ORDER DETAIL ─── */
+let cassoCache = [];
+let lastCassoFetch = 0;
+
 exports.getOrderDetail = async (req, res) => {
   try {
-    const order = await Order.findOne({ _id: req.params.id, user: req.user.id });
+    const idOrOrderNumber = req.params.id;
+    // Tìm bằng _id (nếu độ dài 24) hoặc tìm bằng orderNumber
+    const query = idOrOrderNumber.length === 24 
+      ? { _id: idOrOrderNumber, user: req.user.id }
+      : { orderNumber: idOrOrderNumber, user: req.user.id };
+
+    const order = await Order.findOne(query);
     if (!order) return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+
+    // TỰ ĐỘNG ĐỒNG BỘ CASSO KHI FRONTEND POLLING (Giúp hoạt động trên localhost không cần webhook/ngrok)
+    if (order.paymentStatus === 'pending') {
+      const cassoApiKey = process.env.CASSO_API_KEY;
+      if (cassoApiKey) {
+        try {
+          if (Date.now() - lastCassoFetch > 15000) {
+            const axios = require('axios');
+            const response = await axios.get('https://oauth.casso.vn/v2/transactions?sort=DESC&pageSize=20', {
+              headers: { Authorization: `Apikey ${cassoApiKey}` }
+            });
+            cassoCache = response.data?.data?.records || [];
+            lastCassoFetch = Date.now();
+            console.log(`[Casso Sync] Đã tải về ${cassoCache.length} giao dịch MỚI NHẤT từ Casso API.`);
+          }
+          
+          const transactions = cassoCache;
+          
+          for (const tx of transactions) {
+            const cleanDesc = tx.description.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            const cleanOrderNumber = order.orderNumber.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            
+            // Log ra để debug
+            console.log(`[Casso Sync] Kiểm tra TX: Amount=${tx.amount}, Desc=${cleanDesc} | Đơn hàng: Total=${order.total}, OrderNo=${cleanOrderNumber}`);
+
+            if (cleanDesc.includes(cleanOrderNumber) && tx.amount >= order.total) {
+              console.log(`=> ĐÃ KHỚP! Cập nhật đơn hàng ${order.orderNumber} thành paid`);
+              order.paymentStatus = 'paid';
+              await order.save();
+              
+              // Gửi Google Sheets
+              try {
+                const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbz6CD2fX8Ty0zAUtrv_0x74qvfWykMsuEaHJj5QY9LXImyZBFa620QpLWy-vftXySfpzg/exec';
+                const payload = {
+                  orderNumber: order.orderNumber,
+                  userId: order.user ? order.user.toString() : 'Guest',
+                  customerName: order.shippingAddress?.name || 'Unknown',
+                  products: order.items.map(item => `${item.quantity}x ${item.name}`).join('\n'),
+                  totalAmount: order.total,
+                  transferAmount: tx.amount,
+                  transferContent: tx.description,
+                  time: tx.when || new Date().toISOString()
+                };
+                await axios.post(googleScriptUrl, payload, { headers: { 'Content-Type': 'application/json' } });
+              } catch (sheetErr) {
+                console.error('Lỗi khi đẩy lên Google Sheets:', sheetErr.message);
+              }
+
+              break; // Thoát vòng lặp khi đã khớp
+            }
+          }
+        } catch (cassoErr) {
+          console.error('Casso Sync Polling Error:', cassoErr.message);
+        }
+      }
+    }
+
     res.json(order);
   } catch (err) {
     res.status(500).json({ message: err.message });

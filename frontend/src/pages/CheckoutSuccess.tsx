@@ -4,13 +4,15 @@ import { CheckCircle, Home, FileText } from 'lucide-react';
 const CheckoutSuccess = () => {
   const location = useLocation();
   const orderNumber = location.state?.orderNumber || 'TS-XXXXX';
+  const paymentStatus = location.state?.paymentStatus || 'pending';
+  const paymentMethod = location.state?.paymentMethod || 'banking';
 
   return (
     <div className="bg-gray-50 min-h-[70vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 max-w-lg w-full text-center">
         
         <div className="flex justify-center mb-6">
-          <div className="bg-green-100 text-green-500 p-4 rounded-full">
+          <div className={`p-4 rounded-full ${(paymentStatus === 'paid' || paymentMethod === 'cod') ? 'bg-green-100 text-green-500' : 'bg-yellow-100 text-yellow-500'}`}>
             <CheckCircle className="w-16 h-16" />
           </div>
         </div>
@@ -21,7 +23,15 @@ const CheckoutSuccess = () => {
         
         <p className="text-gray-600 mb-8">
           Cảm ơn bạn đã mua sắm tại TechStore. Mã đơn hàng của bạn là <span className="font-bold text-gray-900">#{orderNumber}</span>. 
-          Chúng tôi sẽ sớm liên hệ để xác nhận và giao hàng.
+          {paymentStatus === 'paid' ? (
+            <span className="block mt-2 text-green-600 font-medium">Đơn hàng đã được thanh toán thành công. Chúng tôi sẽ sớm giao hàng!</span>
+          ) : (
+            paymentMethod === 'cod' ? (
+              <span className="block mt-2 text-green-600 font-medium">Bạn đã chọn Thanh toán khi nhận hàng (COD). Chúng tôi sẽ sớm liên hệ xác nhận và giao hàng!</span>
+            ) : (
+              <span className="block mt-2 text-yellow-600 font-medium">Bạn chưa hoàn tất thanh toán. Vui lòng thanh toán để chúng tôi giao hàng nhé!</span>
+            )
+          )}
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

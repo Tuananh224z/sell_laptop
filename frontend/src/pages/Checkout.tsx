@@ -4,6 +4,7 @@ import { CreditCard, Truck, ShieldCheck, MapPin, AlertCircle, Plus } from 'lucid
 import { useCart } from '../context/CartContext';
 import api from '../config/Axios';
 import { toast } from 'react-toastify';
+import PaymentQRModal from '../components/common/PaymentQRModal';
 
 const BACKEND = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
 const getImgUrl = (src: string) => {
@@ -25,6 +26,9 @@ const Checkout = () => {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [settings, setSettings] = useState<any>(null);
+
+  // QR Modal State
+  const [qrModalData, setQrModalData] = useState<{ orderNumber: string, amount: number } | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -83,9 +87,14 @@ const Checkout = () => {
         note 
       });
       
-      toast.success('Đặt hàng thành công!');
       refetchCart(); // This will clear the cart in context
-      navigate('/checkout/success', { state: { orderNumber: data.orderNumber } });
+      
+      if (paymentMethod === 'banking') {
+        setQrModalData({ orderNumber: data.orderNumber, amount: total });
+      } else {
+        toast.success('Đặt hàng thành công!');
+        navigate('/checkout/success', { state: { orderNumber: data.orderNumber, paymentStatus: 'pending', paymentMethod: 'cod' } });
+      }
     } catch (err: any) {
       console.error('Order failed', err);
       toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi đặt hàng!');
@@ -94,6 +103,14 @@ const Checkout = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-8 relative">
+      {qrModalData && (
+        <PaymentQRModal 
+          orderNumber={qrModalData.orderNumber}
+          amount={qrModalData.amount}
+          onClose={() => navigate('/checkout/success', { state: { orderNumber: qrModalData.orderNumber, paymentStatus: 'pending' } })}
+          onSuccess={() => navigate('/checkout/success', { state: { orderNumber: qrModalData.orderNumber, paymentStatus: 'paid' } })}
+        />
+      )}
       <div className="max-w-[1200px] mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="flex text-sm text-gray-500 mb-6">

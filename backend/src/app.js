@@ -41,6 +41,7 @@ app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/chat',          require('./routes/chat.routes'));
 app.use('/api/settings',      require('./routes/setting.routes'));
 app.use('/api/upload',        require('./routes/upload.routes'));
+app.use('/api/webhooks',      require('./routes/webhook.routes'));
 
 // Health check
 app.get('/api/health', (_, res) => res.json({ status: 'ok', time: new Date() }));
